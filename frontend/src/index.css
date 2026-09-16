@@ -1,0 +1,818 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --janova-bg: #06131d;
+  --janova-bg-soft: #0d1d2b;
+  --janova-panel: rgba(10, 20, 30, 0.82);
+  --janova-panel-strong: rgba(13, 27, 39, 0.96);
+  --janova-border: rgba(148, 163, 184, 0.18);
+  --janova-border-strong: rgba(94, 234, 212, 0.38);
+  --janova-text: #ebf7ff;
+  --janova-muted: #9bb3c6;
+  --janova-primary: #4ade80;
+  --janova-primary-2: #22d3ee;
+  --janova-accent: #a78bfa;
+  --janova-danger: #f87171;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.15), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(74, 222, 128, 0.12), transparent 22%),
+    var(--janova-bg);
+  color: var(--janova-text);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(125, 211, 252, 0.3);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(74, 222, 128, 0.9);
+  outline-offset: 2px;
+}
+
+@keyframes pulse-bar {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scaleY(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.signal-bar {
+  animation: pulse-bar 1.8s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.ai-platform-bg {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, rgba(6, 19, 29, 0.96), rgba(8, 17, 26, 1));
+}
+
+.ai-platform-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.3));
+}
+
+.ai-platform-bg::after {
+  content: "";
+  position: fixed;
+  inset: auto auto 10% 50%;
+  width: 780px;
+  height: 780px;
+  margin-left: -390px;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.18), transparent 60%);
+  filter: blur(40px);
+  animation: janovaGlow 14s ease-in-out infinite alternate;
+}
+
+@keyframes janovaGlow {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    transform: scale(1.16) translateY(-30px);
+  }
+}
+
+.ai-platform-content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+}
+
+.ai-network-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0.75;
+}
+
+.ai-orb {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.14;
+}
+
+.orb-1 {
+  top: -180px;
+  right: -100px;
+  background: rgba(34, 211, 238, 0.8);
+  animation: orbFloat1 12s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+  bottom: -240px;
+  left: -180px;
+  background: rgba(74, 222, 128, 0.7);
+  animation: orbFloat2 15s ease-in-out infinite alternate;
+}
+
+@keyframes orbFloat1 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-120px, 80px); }
+}
+
+@keyframes orbFloat2 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(120px, -100px); }
+}
+
+.ai-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(125, 211, 252, 0.9);
+  box-shadow: 0 0 12px rgba(125, 211, 252, 0.8), 0 0 20px rgba(34, 211, 238, 0.5);
+  animation: aiNodePulse 3s ease-in-out infinite;
+}
+
+.node-1 { top: 18%; left: 12%; }
+.node-2 { top: 32%; left: 38%; animation-delay: 0.8s; }
+.node-3 { top: 20%; left: 72%; animation-delay: 1.5s; }
+.node-4 { top: 58%; left: 82%; animation-delay: 2s; }
+.node-5 { top: 75%; left: 62%; animation-delay: 0.5s; }
+.node-6 { top: 78%; left: 20%; animation-delay: 1.2s; }
+.node-7 { top: 48%; left: 50%; animation-delay: 2.5s; }
+
+.ai-line {
+  position: absolute;
+  height: 1px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.55), rgba(74, 222, 128, 0.45), transparent);
+  opacity: 0.38;
+}
+
+.line-1 { width: 330px; top: 18%; left: 12%; transform: rotate(20deg); }
+.line-2 { width: 360px; top: 32%; left: 38%; transform: rotate(-15deg); }
+.line-3 { width: 380px; top: 20%; left: 72%; transform: rotate(95deg); }
+.line-4 { width: 320px; top: 58%; left: 82%; transform: rotate(145deg); }
+.line-5 { width: 400px; top: 75%; left: 62%; transform: rotate(180deg); }
+.line-6 { width: 350px; top: 78%; left: 20%; transform: rotate(-35deg); }
+
+.ai-signal {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5eead4;
+  box-shadow: 0 0 10px rgba(94, 234, 212, 0.7), 0 0 18px rgba(45, 212, 191, 0.5);
+  animation: signalTravel 5s ease-in-out infinite;
+}
+
+.signal-1 { top: 18%; left: 12%; animation-delay: 0s; }
+.signal-2 { top: 32%; left: 38%; animation-delay: 1.5s; }
+.signal-3 { top: 75%; left: 62%; animation-delay: 3s; }
+.signal-4 { top: 78%; left: 20%; animation-delay: 4s; }
+
+@keyframes signalTravel {
+  0% { opacity: 0; transform: scale(0.5); }
+  20% { opacity: 1; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+  80% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes aiNodePulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+.ai-card {
+  position: relative;
+  background: rgba(9, 18, 27, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 50px rgba(2, 8, 16, 0.35);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ai-card:hover {
+  border-color: rgba(74, 222, 128, 0.42);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px rgba(3, 12, 18, 0.45);
+}
+
+.ai-gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background: linear-gradient(rgba(10, 18, 28, 0.98), rgba(10, 18, 28, 0.98)) padding-box,
+    linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(74, 222, 128, 0.45), rgba(167, 139, 250, 0.6)) border-box;
+  border-radius: 20px;
+}
+
+.ai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #06131d !important;
+  background: linear-gradient(135deg, #5eead4 0%, #34d399 30%, #7dd3fc 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 24px rgba(52, 211, 153, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.ai-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 16px 30px rgba(74, 222, 128, 0.3);
+}
+
+.ai-processing {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-processing::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(94, 234, 212, 0.12), transparent);
+  animation: aiScan 2.5s ease-in-out infinite;
+}
+
+@keyframes aiScan {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d9f9f1;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(94, 234, 212, 0.28);
+}
+
+.ai-badge::before {
+  content: "✦";
+  color: #5eead4;
+  animation: aiBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes aiBadgePulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.theme-select {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--janova-text);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  color-scheme: dark;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.theme-select:hover {
+  border-color: rgba(94, 234, 212, 0.5);
+  background-color: rgba(17, 28, 39, 0.9);
+}
+
+.theme-select:focus {
+  border-color: rgba(94, 234, 212, 0.8);
+  box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.18);
+  outline: none;
+}
+
+.theme-select option {
+  background-color: #0f172a;
+  color: #ebf7ff;
+}
+
+.theme-select option:checked {
+  background-color: rgba(34, 211, 238, 0.18);
+  color: #ffffff;
+}
+
+.theme-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   SMALL FILTER DROPDOWNS
+========================================= */
+
+select.theme-select.text-xs {
+  width: auto;
+  min-width: 130px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+
+/* =========================================
+   AI THEMED DATE & TIME PICKER
+========================================= */
+
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+
+  color-scheme: dark;
+
+  background-color: #0F172A;
+
+  color: #EDF1F9;
+
+  border-color: rgba(155, 140, 255, 0.2);
+
+}
+
+
+/* Calendar Clock Icon */
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+
+  cursor: pointer;
+
+  opacity: 0.9;
+
+  filter:
+    invert(75%)
+    sepia(40%)
+    saturate(700%)
+    hue-rotate(210deg);
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
+}
+
+
+/* Hover Glow */
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+
+  opacity: 1;
+
+  transform: scale(1.15);
+
+  filter:
+    invert(80%)
+    sepia(80%)
+    saturate(900%)
+    hue-rotate(140deg);
+
+}
+
+
+/* Date input focus */
+
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus {
+
+  border-color: #9B8CFF;
+
+  box-shadow:
+    0 0 0 2px rgba(155,140,255,0.15),
+    0 0 20px rgba(155,140,255,0.12);
+
+  outline: none;
+
+}
+
+
+/* Native picker popup theme support */
+
+:root {
+
+  color-scheme: dark;
+
+}
+
+/* =========================================
+   AI CALENDAR POPUP THEME
+========================================= */
+
+
+.react-datepicker {
+
+  background:
+    rgba(15,23,42,0.96) !important;
+
+  backdrop-filter:
+    blur(18px);
+
+  border:
+
+    1px solid
+    rgba(155,140,255,0.25) !important;
+
+  border-radius:
+    16px !important;
+
+  box-shadow:
+
+    0 20px 50px rgba(0,0,0,0.45),
+    0 0 30px rgba(155,140,255,0.15);
+
+  font-family:
+    Inter,
+    sans-serif;
+
+}
+
+
+/* Header */
+
+.react-datepicker__header {
+
+  background:
+
+    linear-gradient(
+      135deg,
+      rgba(155,140,255,0.25),
+      rgba(45,212,191,0.15)
+    ) !important;
+
+  border-bottom:
+
+    1px solid
+    rgba(155,140,255,0.15);
+
+  border-radius:
+
+    16px 16px 0 0;
+
+}
+
+
+/* Month title */
+
+.react-datepicker__current-month {
+
+  color:#EDF1F9;
+
+  font-weight:600;
+
+}
+
+
+/* Week names */
+
+.react-datepicker__day-name {
+
+  color:#9B8CFF;
+
+}
+
+
+/* Days */
+
+.react-datepicker__day {
+
+  color:#EDF1F9;
+
+  border-radius:8px;
+
+}
+
+
+.react-datepicker__day:hover {
+
+  background:
+
+    rgba(155,140,255,0.25)
+    !important;
+
+}
+
+
+/* Selected day */
+
+.react-datepicker__day--selected {
+
+  background:
+
+    linear-gradient(
+      135deg,
+      #9B8CFF,
+      #2DD4BF
+    )
+    !important;
+
+  color:#0B1220 !important;
+
+  font-weight:600;
+
+}
+
+
+/* Today */
+
+.react-datepicker__day--today {
+
+  border:
+
+    1px solid #2DD4BF;
+
+}
+
+
+/* Time picker */
+
+.react-datepicker__time-container {
+
+  border-left:
+
+    1px solid
+    rgba(155,140,255,0.15);
+
+}
+
+.react-datepicker__time-list-item {
+
+  color:#EDF1F9;
+
+}
+
+
+.react-datepicker__time-list-item:hover {
+
+  background:
+
+    rgba(45,212,191,0.15)
+    !important;
+
+}
+
+
+.react-datepicker__time-list-item--selected {
+
+  background:
+
+    #9B8CFF
+    !important;
+
+  color:#0B1220 !important;
+
+}
+
+/* =========================================
+   AI THEMED REACT CALENDAR
+========================================= */
+
+.react-calendar {
+  width: 95% !important;
+  max-width: none !important;
+
+  background: rgba(15, 23, 42, 0.85);
+
+  border: 1px solid rgba(155, 140, 255, 0.25);
+
+  border-radius: 16px;
+
+  padding: 14px;
+
+  color: #EDF1F9;
+
+  font-family: 'Inter', sans-serif;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 0 30px rgba(155, 140, 255, 0.12);
+
+  animation:
+    calendarGlow
+    .35s
+    ease;
+}
+
+
+/* =========================================
+   CALENDAR NAVIGATION
+========================================= */
+
+.react-calendar__navigation {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.react-calendar__navigation button {
+  background: transparent;
+  color: #EDF1F9;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background: #1E3A5F !important;
+  color: #EDF1F9 !important;
+}
+
+
+/* =========================================
+   WEEKDAYS
+========================================= */
+
+.react-calendar__month-view__weekdays {
+  color: #9B8CFF;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+
+/* =========================================
+   DAY TILES
+========================================= */
+
+.react-calendar__tile {
+  background: transparent;
+  color: #EDF1F9;
+  border-radius: 10px;
+  padding: 10px 5px;
+  font-size: 13px;
+  transition: all 0.25s ease;
+}
+
+
+/* =========================================
+   DARK BLUE HOVER
+========================================= */
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.45),
+      rgba(30, 64, 175, 0.60)
+    ) !important;
+
+  color: #EDF1F9 !important;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================
+   SELECTED DATE
+========================================= */
+
+.react-calendar__tile--active {
+  background:
+    linear-gradient(
+      135deg,
+      #9B8CFF,
+      #60A5FA,
+      #2DD4BF
+    ) !important;
+
+  color: #0B1220 !important;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 0 18px rgba(155, 140, 255, 0.45);
+}
+
+
+/* =========================================
+   TODAY
+========================================= */
+
+.react-calendar__tile--now {
+  background: rgba(45, 212, 191, 0.12);
+
+  border: 1px solid rgba(45, 212, 191, 0.35);
+
+  color: #2DD4BF;
+}
+
+
+/* =========================================
+   PREVIOUS / NEXT MONTH DATES
+========================================= */
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: rgba(237, 241, 249, 0.35);
+}
+
+
+/* =========================================
+   REMOVE DEFAULT BUTTON BORDERS
+========================================= */
+
+.react-calendar button {
+  border: none;
+}
+
+
+/* =========================================
+   DISABLED DATES
+========================================= */
+
+.react-calendar__tile:disabled {
+  background: transparent;
+
+  color: rgba(237, 241, 249, 0.25);
+}
+
+
+/* =========================================
+   CALENDAR ANIMATION
+========================================= */
+
+@keyframes calendarGlow {
+
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}

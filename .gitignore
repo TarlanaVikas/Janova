@@ -1,0 +1,11 @@
+.venv
+backend/.venv/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+*.db
+.env
+
+# Firebase secrets
+backend/firebase/firebase-admin.json
