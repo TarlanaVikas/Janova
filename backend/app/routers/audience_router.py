@@ -18,7 +18,9 @@ router = APIRouter(
 def add_recipient(
     payload: schemas.RecipientCreate,
     db: Session = Depends(get_db),
-    _user: models.User = Depends(auth.get_current_user),
+    _user: models.User = Depends(
+        auth.require_roles(["admin", "campaign_manager"])
+    ),
 ):
     recipient = models.Recipient(**payload.model_dump())
     db.add(recipient)
@@ -35,7 +37,9 @@ def list_recipients(
     occupation: Optional[str] = None,
     organization: Optional[str] = None,
     db: Session = Depends(get_db),
-    _user: models.User = Depends(auth.get_current_user),
+    _user: models.User = Depends(
+        auth.require_roles(["admin", "campaign_manager"])
+    ),
 ):
     query = db.query(models.Recipient)
 
@@ -161,7 +165,9 @@ def delete_recipient(
 @router.get("/recipients/segments/options")
 def segment_options(
     db: Session = Depends(get_db),
-    _user: models.User = Depends(auth.get_current_user),
+    _user: models.User = Depends(
+        auth.require_roles(["admin", "campaign_manager"])
+    ),
 ):
     def distinct(column):
         return sorted(
@@ -190,7 +196,9 @@ def search_recipients(
     occupation: Optional[str] = None,
     organization: Optional[str] = None,
     db: Session = Depends(get_db),
-    _user: models.User = Depends(auth.get_current_user),
+    _user: models.User = Depends(
+        auth.require_roles(["admin", "campaign_manager"])
+    ),
 ):
     query = db.query(models.Recipient)
 
@@ -227,7 +235,7 @@ def preview_segment(
     payload: schemas.SegmentFilter,
     db: Session = Depends(get_db),
     _user: models.User = Depends(
-        auth.require_roles(["admin", "campaign_manager", "comms_team"])
+        auth.require_roles(["admin", "campaign_manager"])
     ),
 ):
     """Preview the exact audience matched by a campaign segmentation rule."""

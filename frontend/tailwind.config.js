@@ -4,17 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0B1220',
-        surface: '#131B2E',
-        'surface-alt': '#1A2540',
-        'surface-hover': '#202D4D',
-        border: 'rgba(255,255,255,0.08)',
-        text: '#EDF1F9',
-        'text-dim': '#8D96AC',
-        signal: '#FFA94D',
-        teal: '#2DD4BF',
-        violet: '#9B8CFF',
-        danger: '#FB7185',
+        bg: 'var(--color-bg)',
+        surface: 'var(--color-surface)',
+        'surface-alt': 'var(--color-surface-alt)',
+        'surface-hover': 'var(--color-surface-hover)',
+        border: 'var(--color-border)',
+        text: 'var(--color-text)',
+        'text-dim': 'var(--color-text-dim)',
+        signal: 'var(--color-signal)',
+        teal: 'var(--color-teal)',
+        violet: 'var(--color-violet)',
+        danger: 'var(--color-danger)',
       },
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],

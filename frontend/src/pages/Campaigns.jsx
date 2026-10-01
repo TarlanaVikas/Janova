@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 import Calendar from "react-calendar"
 import "react-calendar/dist/Calendar.css"
@@ -22,6 +23,9 @@ const STATUS_LABEL = {
 }
 
 export default function Campaigns() {
+  const { user } = useAuth()
+  const canManageCampaigns = ['admin', 'campaign_manager'].includes(user?.role)
+  const canDeleteCampaigns = user?.role === 'admin'
   const [searchParams] = useSearchParams()
   const templateId = searchParams.get('template')
 
@@ -79,13 +83,15 @@ function toggleRecipient(id) {
   // Load campaigns
   async function load() {
   try {
-    const [campaignRes, recipientRes, optionsRes] = await Promise.all([
-      api.get('/campaigns'),
+    const campaignRes = await api.get('/campaigns')
+    setCampaigns(campaignRes.data)
+
+    if (!canManageCampaigns) return
+
+    const [recipientRes, optionsRes] = await Promise.all([
       api.get('/recipients'),
       api.get('/recipients/segments/options'),
     ])
-
-    setCampaigns(campaignRes.data)
     setRecipients(recipientRes.data)
     setSegmentOptions(optionsRes.data)
   } catch (error) {
@@ -116,15 +122,15 @@ function toggleRecipient(id) {
   useEffect(() => {
     load()
 
-    if (templateId) {
+    if (templateId && canManageCampaigns) {
       setShowForm(true)
     }
-  }, [templateId])
+  }, [templateId, canManageCampaigns])
 
   // Load selected template
   useEffect(() => {
     async function loadTemplate() {
-      if (!templateId) return
+      if (!templateId || !canManageCampaigns) return
 
       try {
         const res = await api.get(`/templates/${templateId}`)
@@ -140,7 +146,7 @@ function toggleRecipient(id) {
     }
 
     loadTemplate()
-  }, [templateId])
+  }, [templateId, canManageCampaigns])
 
   // Create campaign
   async function previewSegment() {
@@ -246,17 +252,19 @@ function get24HourTime() {
           </div>
 
           <p className="text-text-dim text-sm mt-1">
-            Plan, generate, translate, and dispatch communication campaigns.
+            {canManageCampaigns
+              ? 'Plan, generate, translate, and dispatch communication campaigns.'
+              : 'Review existing campaigns, prepare content, and monitor dispatch.'}
           </p>
         </div>
 
-        <button
+        {canManageCampaigns && <button
           type="button"
           onClick={() => setShowForm((s) => !s)}
           className="ai-button text-sm"
         >
           {showForm ? 'Cancel' : '+ New Campaign'}
-        </button>
+        </button>}
       </header>
 
 
@@ -264,7 +272,7 @@ function get24HourTime() {
           CREATE CAMPAIGN FORM
       ======================================== */}
 
-      {showForm && (
+      {showForm && canManageCampaigns && (
        <form
   onSubmit={handleCreate}
   className="ai-gradient-border p-3 mb-4 space-y-3 ai-processing"
@@ -1007,7 +1015,7 @@ function get24HourTime() {
     </span>
   </div>
 
-  <button
+  {canDeleteCampaigns && <button
     onClick={(e) => {
       e.preventDefault()
       e.stopPropagation()
@@ -1016,7 +1024,7 @@ function get24HourTime() {
     className="text-red-500 hover:text-red-600 text-xs"
   >
     Delete
-  </button>
+  </button>}
 
 </div>
 

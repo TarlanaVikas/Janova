@@ -18,6 +18,7 @@ import {
 import api from '../services/api'
 import StatCard from '../components/StatCard'
 import Chatbot from '../components/Chatbot'
+import { useAuth } from '../context/AuthContext'
 
 const CHANNEL_COLORS = {
   email: '#9B8CFF',
@@ -28,8 +29,45 @@ const CHANNEL_COLORS = {
 }
 
 export default function Dashboard() {
+  const { user } = useAuth()
   const navigate = useNavigate()
   const unreadCount = 3
+  const roleDashboard = {
+    admin: {
+      title: 'Admin Dashboard',
+      subtitle: 'Organization-wide campaign, audience, and delivery overview.',
+      badge: 'Full Access',
+      actions: [
+        { label: 'Campaigns', path: '/campaigns' },
+        { label: 'Audience', path: '/audience' },
+        { label: 'Analytics', path: '/analytics' },
+      ],
+    },
+    campaign_manager: {
+      title: 'Campaign Manager Dashboard',
+      subtitle: 'Plan campaigns and monitor audience reach and delivery.',
+      badge: 'Campaign Management',
+      actions: [
+        { label: 'Create campaign', path: '/campaigns/create' },
+        { label: 'Manage audience', path: '/audience' },
+        { label: 'Templates', path: '/templates' },
+      ],
+    },
+    comms_team: {
+      title: 'Communications Operations',
+      subtitle: 'Track message delivery, incoming feedback, and active channel health.',
+      badge: 'Comms Team',
+      actions: [
+        { label: 'Delivery tracking', path: '/delivery' },
+        { label: 'Review feedback', path: '/feedback' },
+        { label: 'Notifications', path: '/notifications' },
+      ],
+    },
+  }[user?.role] || {
+    title: 'Dashboard',
+    subtitle: 'Live reach and engagement across active campaigns and channels.',
+    badge: 'AI Powered',
+  }
 
   const [data, setData] = useState(null)
   const [campaignPerformance, setCampaignPerformance] = useState([])
@@ -83,6 +121,29 @@ export default function Dashboard() {
       ]
     : []
 
+  const roleMetrics = {
+    admin: [
+      { label: 'Campaigns', value: data.total_campaigns, accent: 'text' },
+      { label: 'Audience Members', value: data.total_recipients, accent: 'violet' },
+      { label: 'Delivery Rate', value: data.delivery_rate, suffix: '%', accent: 'teal' },
+      { label: 'Failure Rate', value: data.failure_rate, suffix: '%', accent: 'danger' },
+    ],
+    campaign_manager: [
+      { label: 'Campaigns to Manage', value: data.total_campaigns, accent: 'text' },
+      { label: 'Potential Reach', value: data.total_recipients, accent: 'violet' },
+      { label: 'Open Rate', value: data.open_rate, suffix: '%', accent: 'signal' },
+      { label: 'Click Rate', value: data.click_rate, suffix: '%', accent: 'teal' },
+    ],
+    comms_team: [
+      { label: 'Messages Processed', value: data.total_messages, accent: 'text' },
+      { label: 'Delivery Rate', value: data.delivery_rate, suffix: '%', accent: 'teal' },
+      { label: 'Failure Rate', value: data.failure_rate, suffix: '%', accent: 'danger' },
+      { label: 'Feedback Received', value: sentimentData?.total ?? 0, accent: 'violet' },
+    ],
+  }
+  const metrics = roleMetrics[user?.role] || roleMetrics.admin
+  const actions = roleDashboard.actions || roleDashboard.admin?.actions || []
+
   return (
     <div>
       {/* Dashboard Header */}
@@ -90,16 +151,16 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="font-display text-xl font-semibold">
-              Dashboard
+              {roleDashboard.title}
             </h1>
 
             <span className="ai-badge">
-              AI Powered
+              {roleDashboard.badge}
             </span>
           </div>
 
           <p className="text-text-dim text-sm mt-1">
-            Live reach and engagement across every active campaign and channel.
+            {roleDashboard.subtitle}
           </p>
         </div>
 
@@ -145,49 +206,34 @@ export default function Dashboard() {
         </button>
       </header>
 
+      <div className="flex flex-wrap gap-2 mb-6">
+        {actions.map((action) => (
+          <button
+            key={action.path}
+            type="button"
+            onClick={() => navigate(action.path)}
+            className="px-3 py-2 rounded-lg border border-border bg-surface-alt/70 text-xs font-medium text-text hover:border-violet/50 hover:text-violet transition"
+          >
+            {action.label}
+            <span className="ml-2 text-text-dim" aria-hidden="true">↗</span>
+          </button>
+        ))}
+      </div>
+
       {/* Main Statistics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-
-        <div className="ai-card">
-          <StatCard
-            label="Campaigns"
-            value={data.total_campaigns}
-            accent="text"
-          />
-        </div>
-
-        <div className="ai-card">
-          <StatCard
-            label="Audience Reached"
-            value={data.total_recipients}
-            accent="violet"
-          />
-        </div>
-
-        <div className="ai-card">
-          <StatCard
-            label="Delivery Rate"
-            value={data.delivery_rate}
-            suffix="%"
-            accent="teal"
-          />
-        </div>
-
-        <div className="ai-card">
-          <StatCard
-            label="Failure Rate"
-            value={data.failure_rate}
-            suffix="%"
-            accent="danger"
-          />
-        </div>
-
+        {metrics.map((metric) => (
+          <div className="ai-card" key={metric.label}>
+            <StatCard {...metric} />
+          </div>
+        ))}
       </div>
 
       {/* Language + Channel Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
         {/* Language Broadcast Pulse */}
+        {user?.role !== 'comms_team' && (
         <div className="lg:col-span-3 ai-gradient-border p-4">
 
           <div className="flex items-baseline justify-between mb-5">
@@ -252,9 +298,10 @@ export default function Dashboard() {
 
           </div>
         </div>
+        )}
 
         {/* Channel Mix */}
-        <div className="lg:col-span-2 ai-card p-4">
+        <div className={`${user?.role === 'comms_team' ? 'lg:col-span-5' : 'lg:col-span-2'} ai-card p-4`}>
 
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-sm font-semibold">
@@ -347,7 +394,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-<div className="ai-gradient-border p-4 mt-4">
+{user?.role !== 'comms_team' && <div className="ai-gradient-border p-4 mt-4">
   <div className="flex items-center justify-between mb-3">
     <div>
       <h2 className="font-display text-sm font-semibold">
@@ -439,10 +486,11 @@ export default function Dashboard() {
       No campaign performance data yet.
     </div>
   )}
-</div>
+</div>}
 
 
       {/* Audience Sentiment */}
+  {user?.role !== 'campaign_manager' && <>
       <div className="ai-card p-5 mt-5">
 
         <div className="flex items-center justify-between mb-5">
@@ -480,7 +528,7 @@ export default function Dashboard() {
               />
 
               <XAxis
-  dataKey="campaign"
+  dataKey="sentiment"
   interval={0}
   height={65}
   tick={({ x, y, payload }) => {
@@ -555,37 +603,7 @@ export default function Dashboard() {
         )}
 
       </div>
-
-      {/* Secondary Statistics */}
-      <div className="grid grid-cols-3 gap-4 mt-5">
-
-        <div className="ai-card">
-          <StatCard
-            label="Open Rate"
-            value={data.open_rate}
-            suffix="%"
-            accent="signal"
-          />
-        </div>
-
-        <div className="ai-card">
-          <StatCard
-            label="Click Rate"
-            value={data.click_rate}
-            suffix="%"
-            accent="violet"
-          />
-        </div>
-
-        <div className="ai-card">
-          <StatCard
-            label="Messages Sent"
-            value={data.total_messages}
-            accent="teal"
-          />
-        </div>
-
-      </div>
+      </>}
 
       {/* AI Assistant */}
       <Chatbot />

@@ -306,7 +306,7 @@ def delete_campaign(
     campaign_id: str,
     db: Session = Depends(get_db),
     _user: models.User = Depends(
-        auth.require_roles(["admin", "campaign_manager"])
+        auth.require_roles(["admin"])
     ),
 ):
 

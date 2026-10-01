@@ -2,6 +2,13 @@
 
 A full-stack AI-powered platform for organizations to plan campaigns, manage audiences, generate and review communication content, translate it into Indian languages, personalize messages, schedule campaigns, and prepare communications for multi-channel distribution.
 
+## Submission materials
+
+- [Submission guide](docs/SUBMISSION_GUIDE.md): architecture, workflow, API overview, setup, demo checklist, verification status, and known limitations.
+- [Final presentation](presentations/FINAL_PRESENTATION.md): slide-ready project presentation source.
+
+The platform is a development/demo implementation. Review the verification status and limitations in the submission guide before describing provider-backed delivery, security testing, or scale testing as completed.
+
 ## Week 1–4 implementation status
 
 ### Weeks 1–2 — Audience Management & Campaign Planning

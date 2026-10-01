@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 const LANGUAGES = [
   'Hindi',
@@ -21,9 +22,12 @@ const TONES = ['informative', 'urgent', 'friendly', 'formal']
 
 export default function CampaignDetail() {
   const { id } = useParams()
+  const { user } = useAuth()
 
   const [campaign, setCampaign] = useState(null)
   const [contents, setContents] = useState([])
+  const [recipients, setRecipients] = useState([])
+  const [selectedRecipientIds, setSelectedRecipientIds] = useState([])
   const [brief, setBrief] = useState('')
   const [tone, setTone] = useState('informative')
 
@@ -33,14 +37,12 @@ export default function CampaignDetail() {
     'Bengali',
   ])
 
-  const [selectedChannels, setSelectedChannels] = useState([
-    'email',
-    'sms',
-  ])
+  const [selectedChannels, setSelectedChannels] = useState(['email'])
 
   const [generating, setGenerating] = useState(false)
   const [translating, setTranslating] = useState(false)
   const [sending, setSending] = useState(false)
+  const [savingAudience, setSavingAudience] = useState(false)
 
   const [analytics, setAnalytics] = useState(null)
   const [status, setStatus] = useState(null)
@@ -50,7 +52,10 @@ export default function CampaignDetail() {
   function load() {
     api
       .get(`/campaigns/${id}`)
-      .then((res) => setCampaign(res.data))
+      .then((res) => {
+        setCampaign(res.data)
+        setSelectedRecipientIds(res.data.recipient_ids || [])
+      })
 
     api
       .get(`/ai/content/${id}`)
@@ -73,24 +78,27 @@ export default function CampaignDetail() {
       .then((res) => setAnalytics(res.data))
       .catch(() => {})
 
-    api
-      .get('/recipients')
-      .then((res) => {
-        const map = {}
+    if (['admin', 'campaign_manager'].includes(user?.role)) {
+      api
+        .get('/recipients')
+        .then((res) => {
+          const map = {}
 
-        res.data.forEach((r) => {
-          map[r.id] = r.name
+          res.data.forEach((r) => {
+            map[r.id] = r.name
+          })
+
+          setRecipients(res.data)
+          setRecipientMap(map)
         })
-
-        setRecipientMap(map)
-      })
+    }
   }
 
   useEffect(() => {
     load()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id])
+  }, [id, user?.role])
 
   useEffect(() => {
     if (campaign?.description) {
@@ -156,6 +164,31 @@ export default function CampaignDetail() {
       )
     } finally {
       setSending(false)
+    }
+  }
+
+  async function handleSaveAudience() {
+    if (!campaign) return
+
+    setSavingAudience(true)
+
+    try {
+      const res = await api.put(`/campaigns/${id}`, {
+        name: campaign.name,
+        description: campaign.description || '',
+        type: campaign.type,
+        status: campaign.status,
+        scheduled_at: campaign.scheduled_at,
+        recipient_ids: selectedRecipientIds,
+        channels: campaign.channels || [],
+        segment_filter: campaign.segment_filter || {},
+      })
+      setCampaign(res.data)
+      setSelectedRecipientIds(res.data.recipient_ids || [])
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Unable to save the campaign audience.')
+    } finally {
+      setSavingAudience(false)
     }
   }
 
@@ -682,9 +715,57 @@ export default function CampaignDetail() {
               Select communication channels and distribute your campaign.
             </p>
 
+              <p className="mt-2 text-[11px] text-text-dim">
+                For a free demo, use Email with Gmail SMTP and an App Password. SMS trial accounts restrict message bodies; WhatsApp needs Cloud API credentials and an approved template.
+              </p>
+
           </div>
 
         </div>
+
+        {['admin', 'campaign_manager'].includes(user?.role) && (
+        <div className="mb-5 rounded-lg border border-border p-3">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <span className="text-sm font-medium">
+              Audience · {selectedRecipientIds.length} selected
+            </span>
+            <button
+              type="button"
+              onClick={handleSaveAudience}
+              disabled={savingAudience || recipients.length === 0}
+              className="ai-button text-xs disabled:opacity-50"
+            >
+              {savingAudience ? 'Saving…' : 'Save audience'}
+            </button>
+          </div>
+
+          {recipients.length === 0 ? (
+            <p className="text-xs text-text-dim">
+              No recipients yet. <Link to="/audience" className="text-signal underline">Add a recipient in Audience</Link> first.
+            </p>
+          ) : (
+            <div className="max-h-48 space-y-1 overflow-y-auto">
+              {recipients.map((recipient) => (
+                <label
+                  key={recipient.id}
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-xs hover:bg-surface-alt"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedRecipientIds.includes(recipient.id)}
+                    onChange={(event) => {
+                      setSelectedRecipientIds((current) => event.target.checked
+                        ? [...current, recipient.id]
+                        : current.filter((recipientId) => recipientId !== recipient.id))
+                    }}
+                  />
+                  <span>{recipient.name} · {recipient.phone || 'No phone number'}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+        )}
 
 
         {/* CHANNEL SELECTION */}

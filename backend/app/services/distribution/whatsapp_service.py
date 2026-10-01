@@ -193,7 +193,7 @@ class WhatsAppService:
                                 "text": recipient.name or "there",
                             },
                                        {"type": "text",
-                                        "text": content,
+                                        "text": short_content,
                             },
                         ],
                     }

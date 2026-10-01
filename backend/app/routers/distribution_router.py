@@ -111,20 +111,42 @@ async def send_campaign(
     # --------------------------------------------------------
 
     try:
-        filt = json.loads(
-            campaign.segment_filter or "{}"
-        )
-
+        filt = json.loads(campaign.segment_filter or "{}")
     except (json.JSONDecodeError, TypeError):
         filt = {}
+    if not isinstance(filt, dict):
+        filt = {}
 
+    try:
+        selected_ids = json.loads(campaign.recipient_ids or "[]")
+    except (json.JSONDecodeError, TypeError):
+        selected_ids = []
+    if not isinstance(selected_ids, list):
+        selected_ids = []
+
+    has_segment_criteria = any(
+        value is not None and value != ""
+        for value in filt.values()
+    )
+    needs_campaign_audience = any(
+        channel != "push" for channel in selected_channels
+    )
+    if needs_campaign_audience and not selected_ids and not has_segment_criteria:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No audience is assigned. Add recipients in Audience, then "
+                "select them for this campaign or save a matching segment."
+            ),
+        )
 
     # --------------------------------------------------------
-    # 4. Find matching recipients
+    # 4. Find explicitly selected or segment-matched recipients
     # --------------------------------------------------------
 
     query = db.query(models.Recipient)
-
+    if selected_ids:
+        query = query.filter(models.Recipient.id.in_(selected_ids))
 
     for field in [
         "language",
@@ -133,13 +155,9 @@ async def send_campaign(
         "occupation",
         "organization",
     ]:
-
         value = filt.get(field)
-
         if value:
-            query = query.filter(
-                getattr(models.Recipient, field) == value
-            )
+            query = query.filter(getattr(models.Recipient, field) == value)
 
     if filt.get("min_engagement_score") is not None:
         query = query.filter(
@@ -152,48 +170,14 @@ async def send_campaign(
         )
 
     recipients = query.all()
-
-
-    # --------------------------------------------------------
-    # 4A. If campaign has manually selected recipients
-    # --------------------------------------------------------
-
-    if hasattr(campaign, "recipient_ids") and campaign.recipient_ids:
-
-        try:
-            selected_ids = json.loads(
-                campaign.recipient_ids
-            )
-
-            selected_query = db.query(models.Recipient).filter(
-                models.Recipient.id.in_(selected_ids)
-            )
-            for field in ["language", "state", "city", "occupation", "organization"]:
-                value = filt.get(field)
-                if value:
-                    selected_query = selected_query.filter(
-                        getattr(models.Recipient, field) == value
-                    )
-            if filt.get("min_engagement_score") is not None:
-                selected_query = selected_query.filter(
-                    models.Recipient.engagement_score >= float(filt["min_engagement_score"])
-                )
-            if filt.get("max_engagement_score") is not None:
-                selected_query = selected_query.filter(
-                    models.Recipient.engagement_score <= float(filt["max_engagement_score"])
-                )
-            recipients = selected_query.all()
-
-        except Exception:
-            pass
-
-
-
-    if not recipients and "push" not in selected_channels:
-           raise HTTPException(
-        status_code=400,
-        detail="No recipients found for this campaign."
-    )
+    if needs_campaign_audience and not recipients:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No recipients match this campaign's selected audience. "
+                "Add a recipient or adjust the saved audience selection."
+            ),
+        )
 
     # --------------------------------------------------------
     # 5. Pre-deployment AI quality/compliance gate

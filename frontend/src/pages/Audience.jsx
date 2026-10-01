@@ -134,7 +134,7 @@ export default function Audience() {
           {[
             ['name', 'Full name'],
             ['email', 'Email'],
-            ['phone', 'Phone'],
+            ['phone', 'Phone (with country code)'],
             ['state', 'State'],
             ['city', 'City'],
             ['occupation', 'Occupation'],
@@ -146,6 +146,8 @@ export default function Audience() {
               </label>
 
               <input
+                type={key === 'phone' ? 'tel' : 'text'}
+                placeholder={key === 'phone' ? '+919876543210' : undefined}
                 value={form[key]}
                 onChange={(e) =>
                   setForm({
@@ -168,6 +170,11 @@ export default function Audience() {
                 "
                 required={key === 'name'}
               />
+              {key === 'phone' && (
+                <p className="mt-1 text-[10px] text-text-dim">
+                  Include +country code. Twilio trial accounts require the destination to be verified.
+                </p>
+              )}
             </div>
           ))}
 

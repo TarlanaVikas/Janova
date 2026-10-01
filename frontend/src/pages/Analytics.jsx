@@ -38,34 +38,28 @@ export default function Analytics() {
   const clickRate = average('click_rate')
 
   return (
-    <div>
-
-      {/* Header */}
+    <div className="w-full">
       <header className="mb-6">
-        <h1 className="font-display text-2xl font-semibold">
+        <h1 className="font-display text-[32px] font-semibold tracking-tight text-text">
           Campaign Analytics
         </h1>
-
-        <p className="text-text-dim text-sm mt-1">
+        <p className="mt-2 text-sm text-text-dim">
           Delivery, open, and click performance for every campaign, side by side.
         </p>
       </header>
 
-
-      {/* Campaign Table */}
-      <div className="bg-surface border border-border rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-[22px] border border-border bg-surface shadow-[0_18px_60px_rgba(2,6,23,0.35)]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wide text-text-dim border-b border-border">
-                <th className="px-4 py-3 font-medium">Campaign</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Messages</th>
-                <th className="px-4 py-3 font-medium">Delivery</th>
-                <th className="px-4 py-3 font-medium">Open</th>
-                <th className="px-4 py-3 font-medium">Click</th>
+              <tr className="border-b border-border text-left text-[11px] font-medium uppercase tracking-[0.18em] text-text-dim">
+                <th className="px-5 py-4">Campaign</th>
+                <th className="px-5 py-4">Type</th>
+                <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4">Messages</th>
+                <th className="px-5 py-4">Delivery</th>
+                <th className="px-5 py-4">Open</th>
+                <th className="px-5 py-4">Click</th>
               </tr>
             </thead>
 
@@ -73,242 +67,103 @@ export default function Analytics() {
               {rows.map((r) => (
                 <tr
                   key={r.id}
-                  className="border-b border-border last:border-0 hover:bg-surface-alt/50 transition"
+                  className="border-b border-border last:border-0 transition hover:bg-surface-alt/40"
                 >
-
-                  {/* Campaign */}
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <Link
                       to={`/campaigns/${r.id}`}
-                      className="font-medium hover:text-violet transition"
+                      className="font-semibold text-text transition hover:text-violet"
                     >
                       {r.name}
                     </Link>
                   </td>
 
-                  {/* Type */}
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <span
-                      className={`text-[11px] px-2 py-0.5 rounded-full border capitalize ${
-                        TYPE_COLORS[r.type] ||
-                        'text-text-dim border-border bg-surface-alt'
+                      className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium capitalize ${
+                        TYPE_COLORS[r.type] || 'border-border bg-surface-alt text-text-dim'
                       }`}
                     >
                       {r.type}
                     </span>
                   </td>
 
-                  {/* Status */}
-                  <td className="px-4 py-3 text-text-dim capitalize">
-                    {r.status}
-                  </td>
-
-                  {/* Messages */}
-                  <td className="px-4 py-3 font-mono">
-                    {r.total_messages}
-                  </td>
-
-                  {/* Delivery */}
-                  <td className="px-4 py-3 font-mono text-teal">
-                    {r.delivery_rate}%
-                  </td>
-
-                  {/* Open */}
-                  <td className="px-4 py-3 font-mono text-signal">
-                    {r.open_rate}%
-                  </td>
-
-                  {/* Click */}
-                  <td className="px-4 py-3 font-mono text-violet">
-                    {r.click_rate}%
-                  </td>
-
+                  <td className="px-5 py-4 capitalize text-text-dim">{r.status}</td>
+                  <td className="px-5 py-4 font-mono text-text">{r.total_messages}</td>
+                  <td className="px-5 py-4 font-mono text-teal">{r.delivery_rate}%</td>
+                  <td className="px-5 py-4 font-mono text-signal">{r.open_rate}%</td>
+                  <td className="px-5 py-4 font-mono text-violet">{r.click_rate}%</td>
                 </tr>
               ))}
 
               {rows.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-10 text-center text-text-dim text-sm"
-                  >
+                  <td colSpan={7} className="px-5 py-12 text-center text-sm text-text-dim">
                     No campaigns yet.
                   </td>
                 </tr>
               )}
             </tbody>
-
           </table>
         </div>
       </div>
 
-
-      {/* Compact Analytics Section */}
       {rows.length > 0 && (
-        <div className="mt-5">
-
-          {/* Section Header */}
-          <div className="flex items-center justify-between mb-3">
+        <div className="mt-6">
+          <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <h2 className="font-display text-sm font-semibold">
-                Performance Snapshot
+              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-text-dim">
+                Quick Overview
               </h2>
-
-              <p className="text-[11px] text-text-dim mt-1">
-                Quick overview of campaign communication performance.
-              </p>
             </div>
-
-            <span className="text-[11px] text-text-dim">
-              {totalMessages} total messages
-            </span>
+            <span className="text-[11px] text-text-dim">{totalMessages} total messages</span>
           </div>
 
-
-          {/* Small Graph Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            {/* Delivery */}
-            <div className="bg-surface border border-border rounded-xl p-4">
-
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-text-dim">
-                  Delivery Rate
-                </span>
-
-                <span className="text-lg font-mono text-teal">
-                  {deliveryRate}%
-                </span>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-[20px] border border-border bg-surface p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm text-text-dim">Delivery Rate</span>
+                <span className="text-2xl font-mono font-semibold text-teal">{deliveryRate}%</span>
               </div>
-
-              <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
+              <div className="h-2.5 overflow-hidden rounded-full bg-surface-alt">
                 <div
-                  className="h-full bg-teal rounded-full transition-all duration-700"
-                  style={{
-                    width: `${Math.min(deliveryRate, 100)}%`,
-                  }}
+                  className="h-full rounded-full bg-teal transition-all duration-700"
+                  style={{ width: `${Math.min(deliveryRate, 100)}%` }}
                 />
               </div>
-
-              <p className="text-[10px] text-text-dim mt-2">
-                Messages successfully delivered
-              </p>
-
+              <p className="mt-3 text-[11px] text-text-dim">Messages successfully delivered</p>
             </div>
 
-
-            {/* Open */}
-            <div className="bg-surface border border-border rounded-xl p-4">
-
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-text-dim">
-                  Open Rate
-                </span>
-
-                <span className="text-lg font-mono text-signal">
-                  {openRate}%
-                </span>
+            <div className="rounded-[20px] border border-border bg-surface p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm text-text-dim">Open Rate</span>
+                <span className="text-2xl font-mono font-semibold text-signal">{openRate}%</span>
               </div>
-
-              <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
+              <div className="h-2.5 overflow-hidden rounded-full bg-surface-alt">
                 <div
-                  className="h-full bg-signal rounded-full transition-all duration-700"
-                  style={{
-                    width: `${Math.min(openRate, 100)}%`,
-                  }}
+                  className="h-full rounded-full bg-signal transition-all duration-700"
+                  style={{ width: `${Math.min(openRate, 100)}%` }}
                 />
               </div>
-
-              <p className="text-[10px] text-text-dim mt-2">
-                Audience engagement with messages
-              </p>
-
+              <p className="mt-3 text-[11px] text-text-dim">Audience engagement with messages</p>
             </div>
 
-
-            {/* Click */}
-            <div className="bg-surface border border-border rounded-xl p-4">
-
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-text-dim">
-                  Click Rate
-                </span>
-
-                <span className="text-lg font-mono text-violet">
-                  {clickRate}%
-                </span>
+            <div className="rounded-[20px] border border-border bg-surface p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm text-text-dim">Click Rate</span>
+                <span className="text-2xl font-mono font-semibold text-violet">{clickRate}%</span>
               </div>
-
-              <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
+              <div className="h-2.5 overflow-hidden rounded-full bg-surface-alt">
                 <div
-                  className="h-full bg-violet rounded-full transition-all duration-700"
-                  style={{
-                    width: `${Math.min(clickRate, 100)}%`,
-                  }}
+                  className="h-full rounded-full bg-violet transition-all duration-700"
+                  style={{ width: `${Math.min(clickRate, 100)}%` }}
                 />
               </div>
-
-              <p className="text-[10px] text-text-dim mt-2">
-                Audience interaction with campaigns
-              </p>
-
+              <p className="mt-3 text-[11px] text-text-dim">Audience interaction with campaigns</p>
             </div>
-
           </div>
-
-
-          {/* Mini Campaign Performance Graph */}
-          <div className="bg-surface border border-border rounded-xl p-4 mt-4">
-
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-display text-sm font-semibold">
-                  Campaign Performance
-                </h3>
-
-                <p className="text-[10px] text-text-dim mt-1">
-                  Delivery, open and click rates by campaign
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-
-              {rows.slice(0, 5).map((r) => (
-                <div key={r.id}>
-
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs truncate max-w-[55%]">
-                      {r.name}
-                    </span>
-
-                    <span className="text-[10px] text-text-dim">
-                      {r.delivery_rate}% delivered
-                    </span>
-                  </div>
-
-                  <div className="h-1.5 bg-surface-alt rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-teal rounded-full"
-                      style={{
-                        width: `${Math.min(
-                          Number(r.delivery_rate) || 0,
-                          100
-                        )}%`,
-                      }}
-                    />
-                  </div>
-
-                </div>
-              ))}
-
-            </div>
-
-          </div>
-
         </div>
       )}
-
     </div>
   )
 }

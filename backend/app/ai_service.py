@@ -26,7 +26,7 @@ GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 # Groq-hosted model. Other options: "llama-3.1-8b-instant" (faster, cheaper),
 # "mixtral-8x7b-32768". See https://console.groq.com/docs/models for the
 # current list of supported models.
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-20b"
 
 # IndicTrans2 / FLORES Language Codes
 LANGUAGE_CODES = {

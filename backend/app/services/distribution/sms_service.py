@@ -8,12 +8,7 @@ from ... import models
 
 
 class SMSService:
-    """
-    Twilio SMS Service for Trial account testing.
-
-    Uses Twilio's predefined Trial SMS template:
-    sms_event_notifications
-    """
+    """Send campaign content through the configured Twilio SMS account."""
 
     def __init__(self):
         self.account_sid = os.getenv("TWILIO_ACCOUNT_SID")
@@ -25,13 +20,8 @@ class SMSService:
             self.auth_token,
         )
 
-        # Twilio Trial predefined SMS template
-        self.trial_template = "sms_event_notifications"
-
     async def send(self, campaign, recipient, content):
-        """
-        Send an SMS using Twilio's Trial predefined template.
-        """
+        """Send one campaign message to one recipient."""
 
         # ---------------------------------------------------------
         # 1. Prepare recipient phone number
@@ -142,7 +132,7 @@ class SMSService:
             )
 
         # ---------------------------------------------------------
-        # 5. Send through Twilio Trial
+        # 5. Send campaign content
         # ---------------------------------------------------------
 
         try:
@@ -152,23 +142,14 @@ class SMSService:
             print("To:", recipient_address)
             print("From:", self.from_number)
             print("Language:", language)
-            print("Trial Template:", self.trial_template)
             print("Campaign Content:", content)
 
             print("Account SID configured:", bool(self.account_sid))
             print("Auth Token configured:", bool(self.auth_token))
             print("From number configured:", bool(self.from_number))
 
-            # IMPORTANT:
-            # Twilio Trial accounts require predefined Trial templates.
-            #
-            # This intentionally sends the predefined template name,
-            # matching the successful Twilio Console request:
-            #
-            # Body=sms_event_notifications
-
             sms = self.client.messages.create(
-                body=self.trial_template,
+                body=content,
                 from_=self.from_number,
                 to=recipient_address,
             )
@@ -204,7 +185,6 @@ class SMSService:
                 channel=models.ChannelEnum.sms,
                 language=recipient.language,
                 content=content,
-                status=models.MessageStatusEnum.failed,
                 recipient_address=recipient_address,
                 provider="twilio",
                 provider_message_id="",

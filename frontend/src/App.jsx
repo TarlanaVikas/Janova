@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -28,13 +28,17 @@ import SentimentMap from './pages/SentimentMap'
 
 
 export default function App() {
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    localStorage.setItem('janova-theme', 'dark')
+  }, [])
+
   return (
     <AuthProvider>
-      {/* Global AI visual background */}
-      <div className="ai-platform-bg">
-      <AIBackground />
-       <div className="relative z-10">
-      <Routes>
+      <div className="ai-platform-bg" data-theme="dark">
+        <AIBackground />
+        <div className="relative z-10">
+          <Routes>
 
         {/* Public Routes */}
         <Route
@@ -94,7 +98,7 @@ export default function App() {
         <Route
           path="/audience"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['admin', 'campaign_manager']}>
               <Audience />
             </ProtectedRoute>
           }
@@ -112,7 +116,7 @@ export default function App() {
         <Route
           path="/campaigns/create"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['admin', 'campaign_manager']}>
               <Campaigns />
             </ProtectedRoute>
           }
@@ -130,7 +134,7 @@ export default function App() {
         <Route
           path="/templates"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['admin', 'campaign_manager']}>
               <Templates />
             </ProtectedRoute>
           }
@@ -139,7 +143,7 @@ export default function App() {
         <Route
           path="/analytics"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['admin', 'campaign_manager']}>
               <Analytics />
             </ProtectedRoute>
           }
@@ -157,7 +161,7 @@ export default function App() {
         <Route
           path="/canvas-studio"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['admin']}>
               <CanvasStudio />
             </ProtectedRoute>
           }
@@ -203,14 +207,14 @@ export default function App() {
 <Route
   path="/sentiment-map"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute roles={['admin']}>
       <SentimentMap />
     </ProtectedRoute>
   }
 />
 
-      </Routes>
-      </div>
+          </Routes>
+        </div>
       </div>
     </AuthProvider>
   )

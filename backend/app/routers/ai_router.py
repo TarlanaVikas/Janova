@@ -128,4 +128,9 @@ async def review_content(
 def get_campaign_content(
     campaign_id: str, db: Session = Depends(get_db), _user: models.User = Depends(auth.get_current_user)
 ):
-    return db.query(models.CampaignContent).filter(models.CampaignContent.campaign_id == campaign_id).all()
+    return (
+        db.query(models.CampaignContent)
+        .filter(models.CampaignContent.campaign_id == campaign_id)
+        .order_by(models.CampaignContent.created_at.desc())
+        .all()
+    )

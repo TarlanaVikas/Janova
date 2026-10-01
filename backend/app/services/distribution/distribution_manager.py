@@ -34,10 +34,10 @@ class DistributionManager:
         self.db = db
 
         self.services = {
-            models.ChannelEnum.email: EmailService(),
-            models.ChannelEnum.sms: SMSService(),
-            models.ChannelEnum.whatsapp: WhatsAppService(),
-            models.ChannelEnum.push: PushService(),
+            models.ChannelEnum.email: EmailService,
+            models.ChannelEnum.sms: SMSService,
+            models.ChannelEnum.whatsapp: WhatsAppService,
+            models.ChannelEnum.push: PushService,
         }
 
     async def send(
@@ -64,16 +64,17 @@ class DistributionManager:
                 models.CampaignContent.campaign_id
                 == campaign.id
             )
+            .order_by(models.CampaignContent.created_at.desc())
             .all()
         )
 
-        content_by_lang = {
-            content.language: content.content
-            for content in contents
-        }
+        content_by_lang = {}
+        for content in contents:
+            content_by_lang.setdefault(content.language, content.content)
 
         default_content = (
-            contents[0].content
+            content_by_lang.get("English")
+            or contents[0].content
             if contents
             else campaign.description or ""
         )
@@ -171,31 +172,16 @@ class DistributionManager:
             seen_subscription_ids = set()
 
             for recipient in subscribed_recipients:
-
-                subscription_id = (
-                    recipient
-                    .onesignal_subscription_id
-                )
-
+                subscription_id = recipient.onesignal_subscription_id
                 if not subscription_id:
                     continue
 
                 if subscription_id in seen_subscription_ids:
-
-                    print(
-                        "Skipping duplicate subscription:",
-                        subscription_id
-                    )
-
+                    print("Skipping duplicate subscription:", subscription_id)
                     continue
 
-                seen_subscription_ids.add(
-                    subscription_id
-                )
-
-                push_recipients.append(
-                    recipient
-                )
+                seen_subscription_ids.add(subscription_id)
+                push_recipients.append(recipient)
 
             print(
                 "Unique public push subscribers:",
@@ -353,7 +339,7 @@ class DistributionManager:
                 # 6. GET CHANNEL SERVICE
                 # =================================================
 
-                service = self.services.get(
+                service_factory = self.services.get(
                     channel_enum
                 )
 
@@ -364,10 +350,10 @@ class DistributionManager:
 
                 print(
                     "Selected service:",
-                    service
+                    service_factory
                 )
 
-                if service is None:
+                if service_factory is None:
 
                     print(
                         "No service found for:",
@@ -412,6 +398,8 @@ class DistributionManager:
                 # =================================================
 
                 try:
+
+                    service = service_factory()
 
                     # -------------------------------------------------
                     # SMS

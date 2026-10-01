@@ -20,7 +20,7 @@ def create_template(
     payload: schemas.TemplateCreate,
     db: Session = Depends(get_db),
     _user: models.User = Depends(auth.require_roles(
-        ["admin", "campaign_manager", "comms_team"]
+        ["admin", "campaign_manager"]
     ))
 ):
     template = models.Template(

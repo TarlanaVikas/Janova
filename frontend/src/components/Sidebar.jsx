@@ -19,6 +19,22 @@ const items = [
 
 export default function Sidebar() {
   const { user, logout } = useAuth()
+  const commsTeamItems = items.filter((item) => ![
+    '/audience',
+    '/templates',
+    '/analytics',
+    '/sentiment-map',
+    '/canvas-studio',
+  ].includes(item.to))
+  const campaignManagerItems = items.filter((item) => ![
+    '/sentiment-map',
+    '/canvas-studio',
+  ].includes(item.to))
+  const visibleItems = user?.role === 'comms_team'
+    ? commsTeamItems
+    : user?.role === 'campaign_manager'
+      ? campaignManagerItems
+      : items
 
   return (
     <aside className="w-64 shrink-0 bg-surface border-r border-border flex flex-col h-screen sticky top-0">
@@ -58,7 +74,7 @@ export default function Sidebar() {
           Workspace
         </p>
 
-        {items.map((item) => (
+        {visibleItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
