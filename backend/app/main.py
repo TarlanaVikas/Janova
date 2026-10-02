@@ -12,6 +12,7 @@ from .routers import bulletins
 from .routers import public_feedback
 
 import asyncio
+import os
 
 from .services.scheduler.scheduler import campaign_scheduler
 
@@ -30,7 +31,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS", "http://localhost:5173"
+        ).split(",")
+        if origin.strip()
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
