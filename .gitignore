@@ -7,5 +7,11 @@ __pycache__/
 *.db
 .env
 
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+
 # Firebase secrets
 backend/firebase/firebase-admin.json
