@@ -1,4 +1,6 @@
-![Janova](https://capsule-render.vercel.app/api?type=waving\&color=0:0F172A,45:1E3A8A,100:2563EB\&height=220\&section=header\&text=Janova\&fontSize=58\&fontColor=FFFFFF\&animation=fadeIn\&fontAlignY=38\&desc=Multilingual%20Mass%20Communication%20%26%20Public%20Awareness%20Platform\&descAlignY=60\&descSize=18)
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,50:1E3A8A,100:2563EB&height=220&section=header&text=Janova&fontSize=58&fontColor=FFFFFF&animation=fadeIn&fontAlignY=38" alt="Janova">
+</p>
 
 <p align="center">
   <strong>AI-powered multilingual communication for smarter audience engagement</strong>
